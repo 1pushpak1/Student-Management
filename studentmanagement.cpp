@@ -1,286 +1,202 @@
-// Include all the necessary libraries.
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
-
+#include<iostream>
+#include<string>
+#include<conio.h>
+#include<stdlib.h>
 using namespace std;
 
+int main();
+void show_data(int searchkey);     //function used to show data to end-user.
+void get_data(int i);           //function used to obtain data from end-user.
+void search_student(int searchkey);
+void add_student();      //This function is used to add record of new student.
+void edit_student(int idnumber);   //function is used to edit existing record.   
+void fullscreen();
+int ts;
+
+struct student    //Structure student is made to store student attributes.
+{ 
+  int rollno; 
+  string name;
+  string fname;
+  string cell;
+  string dob;
+  string address;
+};
+
+student rec[50];  //This is basic array of defined structure to sore data.
 int main()
 {
-	// Considering the max length of data entered (name) to
-	// be 15.
-	char data[15];
-	int n = 0, option = 0, count_n = 0;
-	// This is the initial mark alloted to a subject.
-	string empty = "00";
-	string proctor = "";
-	// Name of the file in which DB is stored.
-	ifstream f("Example.txt");
-	string line;
+  system("CLS");
+  system("color B1");
+  int choice;   //int variable used to determine which operation user want to do.
+  int idnumber;   //int variable used to record ID number whih user want to edit.
+  int searchkey;  //int variable to store student roll_no by which user can search.
+  
+  cout<<"Enter The Total Number of Student(s)- Max 50: ";
+  cin>>ts;
 
-	// The following for loop counts the total number of
-	// lines in the file.
-	for (int i = 0; std::getline(f, line); ++i) {
-		count_n++;
-	}
+ while(ts--)
+ {
+  cout<<"\n\t\tWhat do you want to do?"<<endl;
+  cout<<"\t\t----------------------"<<endl;
+  cout<<"\t\t1-Add student"<<endl;
+  cout<<"\t\t2-Edit student"<<endl;
+  cout<<"\t\t3-Search student"<<endl;
+  cout<<"\t\t4-Quit Program"<<endl;
+  cout<<"\t\t----------------------"<<endl;
+  cout<<"Enter your choice: ";
 
-	while (option != 6) {
-		// This prints out all the available options in the
-		// DB
-		cout << "\nAvailable operations: \n1. Add New "
-				"Students\n2."
-			<< "Student Login\n3. Faculty Login\n4. "
-				"Proctor Login\n5. Admin View\n"
-			<< "6. Exit\nEnter option: ";
-		cin >> option;
+  cin>>choice;
+  switch(choice)
+ {
+   case 1:         //If user presses 1 then student adding module would be displayed.
+    add_student();
+    break;
+   case 2:         //If there are no records in array then it will ask the user to input records first.
+    if(rec[0].rollno==0)
+   {
+     cout<<"Please Add sudents first."<<endl;
+     system("pause");
+    main();
+   }
+    else         //If records are present in array then it will show table.
+   { 
+     cout<<endl;
+     cout<<"--------------------------------------------------------------------------------"<<endl;
+     cout<<"---------------------------Student record Table---------------------------------"<<endl;
+     cout<<"--------------------------------------------------------------------------------"<<endl; 
+     cout<<"ID   "<<"Roll   "<<"Name      "<<"Father\tCell no.      "<<"DOB          "<<"Address\n\n";
+     cout<<"--------------------------------------------------------------------------------"<<endl; 
 
-		if (option == 1) {
-			cout << "Enter the number of students: ";
-			cin >> n;
+     for(int i=0;i<=ts;i++)
+    {
+      show_data(i);     //funtion is called with index value to show data.
+     }
 
-			count_n = count_n + n;
+     cout<<"--------------------------------------------------------------------------------"<<endl;
+     cout<<"Which ID number your want to edit: ";
+   
+     cin>>idnumber;            //Asking the user at which ID he wants to make a change.
+       
+    if(idnumber>ts || idnumber<0)  //Validating the ID number.
+    {      
+          cout<<"\nInvalid ID Number."<<endl;
+       }
+       else
+    {
+          edit_student(idnumber);    //Passing ID number to Edit Function.
+       }
+   }
+   break;
+   
+  case 3:
+    if(rec[0].rollno==0)     //If no record exist then ask the user o enter records first.
+   {   
+     cout<<"Please Add sudents first."<<endl;
+     system("pause");
+     main();         //Return to main so user can input new record.
+    }
+    else
+   {
+     cout<<"Enter roll_no of student you want to search: ";
+     cin>>searchkey;     //roll_no as the search key can be entered by user.
+     search_student(searchkey);}
+     break;
+   case 4:
+    return 0;        //Terminating the records.
+    break;
+   default:         //Default value for ivalid Input. 
+    cout<<"Invalid number."<<endl;
+    system("pause");
+  main();
+  }
+ }
+  return 0;
+}
 
-			for (int i = 0; i < n; i++) {
-				ofstream outfile;
-				outfile.open("Example.txt", ios::app);
-				// The entire data of a single student is
-				// stored line-by-line.
-				cout << "Enter your registration number: ";
-				cin >> data;
-				outfile << data << "\t";
+  
+void get_data(int i)        //Function for receiving data from user and populatiing the variables with values.
+{   
+  cout<<"Enter student roll number in  format(1XXX): ";
+  cin>>rec[i].rollno;
+  cout<<"Enter student name: ";
+  cin>>rec[i].name;
+  cout<<"Enter student's Father name: ";
+  cin>>rec[i].fname;
+  cout<<"Enter student's cell phone number: ";
+  cin>>rec[i].cell;
+  cout<<"Enter student's Date of Birth(dd/mm/yyyy): ";
+  cin>>rec[i].dob;
+  cout<<"Enter student's Address: ";
+  cin>>rec[i].address;
+}
 
-				cout << "Enter your name: ";
-				cin >> data;
-				int len = strlen(data);
+void show_data(int searchkey)      //Function for showing data on the screen.
+{    
+  int i=searchkey;
+  cout<<i<<"    ";
+  cout<<rec[i].rollno<<"   ";
+  cout<<rec[i].name<<"     ";
+  cout<<rec[i].fname<<"\t";
+  cout<<rec[i].cell<<"   ";
+  cout<<rec[i].dob<<"   ";
+  cout<<rec[i].address<<"\n\n";
+}
 
-				while (len < 15) {
-					data[len] = ' ';
-					len = len + 1;
-				}
-				outfile << data << "\t";
-				// Inserting empty data initially into the
-				// file
-				outfile << empty << "\t";
-				outfile << empty << "\t";
+void search_student(int searchkey)
+{
+  for(int i=0;i<=ts;i++)       //Loop thrugh complete array.
+ { 
+   if(rec[i].rollno==searchkey)    //If roll number matches to search term.
+  {   
+    cout<<"ID   "<<"Roll   "<<"Name      "<<"Father\tCell no.      "<<"DOB          "<<"Address\n\n";
+    show_data(i);       //A function is used inside another function.
+   }
+  } 
+}
 
-				cout << "Enter your proctor ID: ";
-				cin >> proctor;
+void add_student()         //This function is used to add record of new student.
+{    
+  for(int i=0;i<=ts;i++)
+ {
+    get_data(i);          //Loop was processed 5 times to get input for 5 students.
+  }
+  system("CLS");
+  cout<<endl;
+  cout<<"--------------------------------------------------------------------------------"<<endl;
+  cout<<"---------------------------Student record Table---------------------------------"<<endl;
+  cout<<"--------------------------------------------------------------------------------"<<endl;
+  cout<<"ID   "<<"Roll   "<<"Name      "<<"Father\tCell no.      "<<"DOB          "<<"Address\n\n";
+  cout<<"--------------------------------------------------------------------------------"<<endl;
 
-				outfile << proctor << endl;
-			}
-		}
+  for(int i=0;i<=ts;i++)
+ {
+    show_data(i);        //Loop was processed for 5 times to show obtained records.
+  }
+  cout<<"--------------------------------------------------------------------------------"<<endl;
+  cout<<"---------------------------------FINISH-----------------------------------------"<<endl;
+  cout<<"--------------------------------------------------------------------------------"<<endl;
+  system("pause");
 
-		else if (option == 2) {
-			char regno[9];
-			cout << "Enter your registration number: ";
-			cin >> regno;
-			ifstream infile;
-			int check = 0;
-			infile.open("Example.txt", ios::in);
+  main();          //Return to main function to again show menu.
+}
 
-			// This loop prints out the data according to
-			// the registration number specified.
-			while (infile >> data) {
-				if (strcmp(data, regno) == 0) {
-					cout
-						<< "\nRegistration Number: " << data
-						<< endl;
-					infile >> data;
-					cout << "Name: " << data << endl;
-
-					infile >> data;
-					cout << "CSE1001 mark: " << data
-						<< endl;
-
-					infile >> data;
-					cout << "CSE1002 mark: " << data
-						<< endl;
-
-					infile >> data;
-					cout << "Proctor ID: " << data << endl;
-
-					infile.close();
-					check = 1;
-				}
-			}
-
-			if (check == 0) {
-				cout << "No such registration number found!"
-					<< endl;
-			}
-		}
-
-		// This loop is used to view and add marks to the
-		// database of a student.
-		else if (option == 3) {
-			char subcode[7];
-			cout << "Enter your subject code: ";
-			cin >> subcode;
-			string code1 = "CSE1001", code2 = "CSE1002",
-				mark = "";
-			ifstream infile;
-			int check = 0;
-
-			cout << "\nAvailable operations: \n1. Add data "
-					"about marks\n"
-				<< "2. View data\nEnter option: ";
-			cin >> option;
-
-			if (option == 1) {
-				cout
-					<< "Warning! You would need to add mark"
-					<< "details for all the students!"
-					<< endl;
-				for (int i = 0; i < count_n; i++) {
-					fstream file("Example.txt");
-
-					// The seek in file has been done
-					// according to the length
-					// of the data being inserted. It needs
-					// to adjusted accordingly for different
-					// lengths of data.
-
-					if (strcmp(subcode, code1.c_str())
-						== 0) {
-						file.seekp(26 + 37 * i,
-								std::ios_base::beg);
-						cout << "Enter the mark of student#"
-							<< (i + 1) << " : ";
-						cin >> mark;
-						file.write(mark.c_str(), 2);
-					}
-
-					if (strcmp(subcode, code2.c_str())
-						== 0) {
-						file.seekp(29 + 37 * i,
-								std::ios_base::beg);
-						cout << "Enter the mark of student#"
-							<< (i + 1) << " : ";
-						cin >> mark;
-						file.write(mark.c_str(), 2);
-					}
-				}
-			}
-
-			// This loop is used to view marks of a student.
-			// The extra infile commands have been used to
-			// get a specific mark only since the data has
-			// been seperated by a tabspace.
-
-			else if (option == 2) {
-				infile.open("Example.txt", ios::in);
-				if (strcmp(subcode, code1.c_str()) == 0) {
-					cout << "Registration number - Marks\n"
-						<< endl;
-					while (infile >> data) {
-						cout << data;
-						infile >> data;
-						infile >> data;
-						cout << " - " << data << endl;
-						infile >> data;
-						infile >> data;
-						check = 1;
-					}
-				}
-
-				infile.close();
-				infile.open("Example.txt", ios::in);
-
-				if (strcmp(subcode, code2.c_str()) == 0) {
-					cout << "Registration number - Marks\n"
-						<< endl;
-					while (infile >> data) {
-						cout << data;
-						infile >> data;
-						infile >> data;
-						infile >> data;
-						cout << " - " << data << endl;
-						infile >> data;
-						check = 1;
-					}
-				}
-			}
-
-			infile.close();
-
-			if (check == 0) {
-				cout << "No such subject code found!"
-					<< endl;
-			}
-		}
-
-		// This loop displays all the details of students
-		// under the same proctor ID.
-
-		else if (option == 4) {
-			char procid[7];
-			cout << "Enter your proctor ID: ";
-			cin >> procid;
-			int check = 0;
-			char temp1[100], temp2[100], temp3[100];
-			char temp4[100], id[100];
-			ifstream infile;
-			infile.open("Example.txt", ios::in);
-
-			while (infile >> temp1) {
-				infile >> temp2;
-				infile >> temp3;
-				infile >> temp4;
-				infile >> id;
-
-				if (strcmp(id, procid) == 0) {
-					cout << "\nRegistration Number: "
-						<< temp1 << endl;
-					cout << "Name: " << temp2 << endl;
-					cout << "CSE1001 Mark: " << temp3
-						<< endl;
-					cout << "CSE1002 Mark: " << temp4
-						<< endl;
-					check = 1;
-				}
-			}
-
-			if (check == 0) {
-				cout << "No such proctor ID found!" << endl;
-			}
-		}
-
-		// This loop acts as an admin view to see all the
-		// data in the file.
-
-		else if (option == 5) {
-			char password[25];
-			cout << "Enter the admin password: ";
-			cin >> password;
-
-			// This variable value can be changed according
-			// to your requirement of the administrator
-			// password.
-
-			string admin_pass = "admin";
-
-			if (strcmp(password, admin_pass.c_str()) == 0) {
-				cout << "Reg No.	 "
-						"\tName\tCSE1001\tCSE1002\tProctor "
-						"ID"
-					<< endl;
-				ifstream infile;
-				infile.open("Example.txt", ios::in);
-				char data[20];
-
-				while (infile >> data) {
-					cout << data << "\t";
-					infile >> data;
-					cout << data << "\t";
-					infile >> data;
-					cout << data << "\t";
-					infile >> data;
-					cout << data << "\t";
-					infile >> data;
-					cout << data << endl;
-				}
-			}
-		}
-	}
+void edit_student(int idnumber)     //function is used to edit existing record.
+{  
+  for(int i=0;i<=ts;i++)       //Loop is started.
+ {  
+   if(idnumber==i)       //Through loop every value is compared with search term.
+  {         
+    cout<<"\nExisted information about this record.\n\n";
+    cout<<"--------------------------------------------------------------------------------"<<endl;
+    cout<<"ID   "<<"Roll   "<<"Name      "<<"Father\tCell no.      "<<"DOB          "<<"Address\n\n";
+    cout<<"--------------------------------------------------------------------------------"<<endl;
+    show_data(i);       //Load information for existing record.
+    cout<<"\n\nEnter new data for above shown record.\n\n";
+    get_data(i);         //Inputing data for that specific record.
+    cout<<"\n\nRecord updated successfully."<<endl;
+    system("pause");
+    main();           //Return to main function.
+   }
+  }
 }
